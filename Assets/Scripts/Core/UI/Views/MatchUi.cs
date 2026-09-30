@@ -1,7 +1,6 @@
 using System;
 using SeaBattle.Common.Config;
 using UnityEngine;
-using Zenject;
 
 namespace SeaBattle.Core.UI.Views
 {
@@ -11,14 +10,14 @@ namespace SeaBattle.Core.UI.Views
         private readonly PlayerBoardView _second;
 
         /// <summary>
-        /// Builds both player columns and the shared debug bar under the scene context.
+        /// Binds both player columns and the shared debug bar that are placed in the scene.
         /// </summary>
-        public MatchUi(GameConfig config, BoardArt art, SceneContext scene)
+        public MatchUi(MatchScreenRefs screen, GameConfig config, BoardArt art)
         {
-            var hud = new MatchHudView(scene.transform, config.MessageLogEnabled);
-            Hud = hud;
-            _first = new PlayerBoardView(hud.FirstColumn, "Игрок 1", config.DeliveryDelayMilliseconds, art);
-            _second = new PlayerBoardView(hud.SecondColumn, "Игрок 2", config.DeliveryDelayMilliseconds, art);
+            screen.ApplyConfig(config.MessageLogEnabled, config.DeliveryDelayMilliseconds);
+            Hud = new MatchHudView(screen);
+            _first = new PlayerBoardView(screen.First, art);
+            _second = new PlayerBoardView(screen.Second, art);
         }
 
         public IMatchHudView Hud { get; }

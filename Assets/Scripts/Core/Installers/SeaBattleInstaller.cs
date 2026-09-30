@@ -29,6 +29,7 @@ namespace SeaBattle.Core.Installers
             container.Bind<ClientSession>().WithId(SeatId.First).FromMethod(ctx => CreateSession(ctx, PlayerId.First, SeatId.First)).AsCached();
             container.Bind<ClientSession>().WithId(SeatId.Second).FromMethod(ctx => CreateSession(ctx, PlayerId.Second, SeatId.Second)).AsCached();
             container.Bind<MatchGateway>().FromMethod(CreateGateway).AsSingle();
+            container.Bind<MatchScreenRefs>().FromComponentInHierarchy().AsSingle();
             container.Bind<MatchUi>().AsSingle();
             container.BindInterfacesAndSelfTo<MatchRuntime>().AsSingle().NonLazy();
             container.BindInterfacesAndSelfTo<MatchPresenter>().AsSingle().NonLazy();

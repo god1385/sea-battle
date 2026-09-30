@@ -6,7 +6,7 @@ public static class BoardSpriteImporter
     [InitializeOnLoadMethod]
     private static void ImportAsSprites()
     {
-        const string folder = "Assets/Resources/Sprites";
+        const string folder = "Assets/_Art/Resources/Sprites";
         if (!AssetDatabase.IsValidFolder(folder))
             return;
 
