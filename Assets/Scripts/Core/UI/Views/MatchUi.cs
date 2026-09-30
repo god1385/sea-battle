@@ -10,7 +10,7 @@ namespace SeaBattle.Core.UI.Views
 
         public MatchUi(MatchScreenRefs screen, GameConfig config, BoardArt art)
         {
-            screen.ApplyConfig(config.MessageLogEnabled, config.DeliveryDelayMilliseconds);
+            screen.ApplyConfig(config.MessageLogEnabled, config.DeliveryDelayMilliseconds, config.MessageLossPercent);
             Hud = new MatchHudView(screen);
             _first = new PlayerBoardView(screen.First, art);
             _second = new PlayerBoardView(screen.Second, art);

@@ -9,6 +9,8 @@ namespace SeaBattle.Core.Network
 
         public int DeliveryDelayMilliseconds { get; set; }
 
+        public int LossPercent { get; set; }
+
         public void Connect();
 
         public void Disconnect();

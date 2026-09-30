@@ -5,7 +5,7 @@ namespace SeaBattle.Core.Game
 {
     public class GameRules
     {
-        public GameRules(int width, int height, IReadOnlyList<int> shipLengths)
+        public GameRules(int width, int height, IReadOnlyList<int> shipLengths, int turnSeconds = 20)
         {
             if (width < 1)
                 throw new ArgumentOutOfRangeException(nameof(width));
@@ -15,6 +15,9 @@ namespace SeaBattle.Core.Game
 
             if (shipLengths.Count == 0)
                 throw new ArgumentException("At least one ship is required.", nameof(shipLengths));
+
+            if (turnSeconds < 1)
+                throw new ArgumentOutOfRangeException(nameof(turnSeconds));
 
             for (var i = 0; i < shipLengths.Count; i++)
             {
@@ -29,6 +32,7 @@ namespace SeaBattle.Core.Game
                 copy[i] = shipLengths[i];
 
             ShipLengths = copy;
+            TurnSeconds = turnSeconds;
         }
 
         public int Width { get; }
@@ -36,5 +40,7 @@ namespace SeaBattle.Core.Game
         public int Height { get; }
 
         public IReadOnlyList<int> ShipLengths { get; }
+
+        public int TurnSeconds { get; }
     }
 }

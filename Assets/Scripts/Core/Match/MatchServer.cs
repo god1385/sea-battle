@@ -17,6 +17,11 @@ namespace SeaBattle.Core.Match
         private PlayerId _currentTurn;
         private MatchPhase _phase = MatchPhase.NotStarted;
         private PlayerId? _winner;
+        private float _turnLimit;
+        private float _turnSecondsLeft;
+        private bool _firstConnected;
+        private bool _secondConnected;
+        private bool _turnPaused;
 
         public MatchServer(IShipPlacer shipPlacer)
         {
@@ -39,6 +44,9 @@ namespace SeaBattle.Core.Match
                 _currentTurn = random.Next(0, 2) == 0 ? PlayerId.First : PlayerId.Second;
                 _phase = MatchPhase.InProgress;
                 _winner = null;
+                _turnLimit = rules.TurnSeconds;
+                _turnSecondsLeft = _turnLimit;
+                _turnPaused = false;
                 _requests.Clear();
                 return;
             }
@@ -57,6 +65,29 @@ namespace SeaBattle.Core.Match
             return response;
         }
 
+        public bool IsTurnPaused => _turnPaused;
+
+        public bool TickTurn(float deltaSeconds, bool firstConnected, bool secondConnected)
+        {
+            if (_phase != MatchPhase.InProgress)
+                return false;
+
+            _firstConnected = firstConnected;
+            _secondConnected = secondConnected;
+            RefreshPause();
+            if (_turnPaused)
+                return false;
+
+            _turnSecondsLeft -= deltaSeconds;
+            if (_turnSecondsLeft > 0f)
+                return false;
+
+            _currentTurn = Opponent(_currentTurn);
+            _turnSecondsLeft = _turnLimit;
+            RefreshPause();
+            return true;
+        }
+
         public PlayerView GetView(PlayerId player)
         {
             if (_phase == MatchPhase.NotStarted)
@@ -71,7 +102,9 @@ namespace SeaBattle.Core.Match
                 CopyHulls(enemy, false),
                 _currentTurn,
                 _phase,
-                _winner);
+                _winner,
+                (int)Math.Ceiling(_turnSecondsLeft),
+                _turnPaused);
         }
 
         private ShotResponse Resolve(PlayerId player, CellCoord cell)
@@ -98,7 +131,21 @@ namespace SeaBattle.Core.Match
             else
                 _currentTurn = Opponent(player);
 
+            _turnSecondsLeft = _turnLimit;
+            RefreshPause();
             return ShotResponse.Accepted(resolution.Kind, _winner);
+        }
+
+        private void RefreshPause()
+        {
+            if (_phase != MatchPhase.InProgress)
+            {
+                _turnPaused = false;
+                return;
+            }
+
+            var connected = _currentTurn == PlayerId.First ? _firstConnected : _secondConnected;
+            _turnPaused = !connected;
         }
 
         private Board BoardOf(PlayerId player) => player == PlayerId.First ? _firstBoard : _secondBoard;

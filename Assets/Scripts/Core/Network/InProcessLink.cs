@@ -15,8 +15,11 @@ namespace SeaBattle.Core.Network
         private readonly Subject<IncomingMessage> _serverIncoming = new Subject<IncomingMessage>();
         private readonly BehaviorSubject<bool> _connection;
 
+        private readonly Random _random = new Random();
+
         private float _elapsedMs;
         private int _delayMs;
+        private int _lossPercent;
         private bool _clientConnected;
         private bool _disposed;
 
@@ -84,6 +87,12 @@ namespace SeaBattle.Core.Network
 
             var envelope = WireJson.Unpack(json);
             _log($"{_label} отправил {envelope.Type}");
+            if (Lost())
+            {
+                _log($"{_label} потерял {envelope.Type} (к серверу)");
+                return;
+            }
+
             _toServer.Add(new Delivery(envelope.Type, envelope.Payload, _elapsedMs + _delayMs));
         }
 
@@ -93,6 +102,12 @@ namespace SeaBattle.Core.Network
                 return;
 
             var envelope = WireJson.Unpack(json);
+            if (Lost())
+            {
+                _log($"{_label} потерял {envelope.Type} (к клиенту)");
+                return;
+            }
+
             _toClient.Add(new Delivery(envelope.Type, envelope.Payload, _elapsedMs + _delayMs));
         }
 
@@ -116,6 +131,8 @@ namespace SeaBattle.Core.Network
 
             queue.Clear();
         }
+
+        private bool Lost() => _lossPercent >= 100 || (_lossPercent > 0 && _random.Next(100) < _lossPercent);
 
         private readonly struct Delivery
         {
@@ -145,6 +162,12 @@ namespace SeaBattle.Core.Network
             {
                 get => _link._delayMs;
                 set => _link._delayMs = value < 0 ? 0 : value;
+            }
+
+            public int LossPercent
+            {
+                get => _link._lossPercent;
+                set => _link._lossPercent = value < 0 ? 0 : value > 100 ? 100 : value;
             }
 
             public void Connect() => _link.ConnectClient();

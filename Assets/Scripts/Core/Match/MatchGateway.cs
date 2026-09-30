@@ -26,6 +26,17 @@ namespace SeaBattle.Core.Match
 
         public void Start(GameRules rules, int seed) => _server.Start(rules, seed);
 
+        public void TickTurn(float deltaSeconds, bool firstConnected, bool secondConnected)
+        {
+            var paused = _server.IsTurnPaused;
+            var passed = _server.TickTurn(deltaSeconds, firstConnected, secondConnected);
+            if (!passed && _server.IsTurnPaused == paused)
+                return;
+
+            SendSnapshot(PlayerId.First);
+            SendSnapshot(PlayerId.Second);
+        }
+
         public void Dispose() => _subscriptions.Dispose();
 
         private void OnMessage(PlayerId player, IncomingMessage message)

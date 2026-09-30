@@ -105,12 +105,13 @@ public static class SampleSceneLayout
         controlsRow.childControlHeight = true;
         controlsRow.childForceExpandWidth = true;
         controlsRow.childForceExpandHeight = true;
-        var delay = CreateDelay(controls, buttonSprite, font);
+        var delay = CreateIntegerField(controls, "Delay", "400", buttonSprite, font);
+        var loss = CreateIntegerField(controls, "Loss", "0", buttonSprite, font);
         var disconnect = CreateButton(controls, "Разорвать", buttonSprite, font);
         var connect = CreateButton(controls, "Подключить", buttonSprite, font);
 
         var refs = column.gameObject.AddComponent<PlayerColumnRefs>();
-        refs.Assign(status, own, enemy, disconnect, connect, delay);
+        refs.Assign(status, own, enemy, disconnect, connect, delay, loss);
         return refs;
     }
 
@@ -170,14 +171,14 @@ public static class SampleSceneLayout
         image.enabled = false;
     }
 
-    private static InputField CreateDelay(RectTransform parent, Sprite sprite, Font font)
+    private static InputField CreateIntegerField(RectTransform parent, string name, string value, Sprite sprite, Font font)
     {
-        var panel = CreatePanel(parent, "Delay", new Color(0.08f, 0.1f, 0.14f), sprite);
-        var text = CreateText(panel, "400", 16, TextAnchor.MiddleCenter, font);
+        var panel = CreatePanel(parent, name, new Color(0.08f, 0.1f, 0.14f), sprite);
+        var text = CreateText(panel, value, 16, TextAnchor.MiddleCenter, font);
         var input = panel.gameObject.AddComponent<InputField>();
         input.textComponent = text;
         input.contentType = InputField.ContentType.IntegerNumber;
-        input.text = "400";
+        input.text = value;
         return input;
     }
 

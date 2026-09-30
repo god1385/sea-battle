@@ -35,11 +35,13 @@ namespace SeaBattle.Core.UI.Views
             second = secondColumn;
         }
 
-        public void ApplyConfig(bool logEnabled, int delayMilliseconds)
+        public void ApplyConfig(bool logEnabled, int delayMilliseconds, int lossPercent)
         {
             logToggle.isOn = logEnabled;
             first.SetDelay(delayMilliseconds);
             second.SetDelay(delayMilliseconds);
+            first.SetLoss(lossPercent);
+            second.SetLoss(lossPercent);
         }
     }
 }

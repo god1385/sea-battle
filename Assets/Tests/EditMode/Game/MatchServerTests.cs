@@ -184,6 +184,40 @@ namespace SeaBattle.Tests.Game
             Assert.That(server.GetView(shooter).CurrentTurn, Is.EqualTo(shooter));
         }
 
+        [Test]
+        public void TickTurn_Expires_PassesTheTurnWithoutAShot()
+        {
+            var server = Start(3);
+            var before = server.GetView(PlayerId.First);
+            var shooter = before.CurrentTurn;
+
+            Assert.That(server.TickTurn(19f, true, true), Is.False);
+            Assert.That(server.GetView(PlayerId.First).CurrentTurn, Is.EqualTo(shooter));
+
+            Assert.That(server.TickTurn(1.1f, true, true), Is.True);
+            var after = server.GetView(shooter);
+            Assert.That(after.CurrentTurn, Is.EqualTo(Opponent(shooter)));
+            Assert.That(Count(after.EnemyCells, CellMark.Unknown), Is.EqualTo(36));
+        }
+
+        [Test]
+        public void TickTurn_WhileCurrentPlayerIsDisconnected_DoesNotPass()
+        {
+            var server = Start(3);
+            var shooter = server.GetView(PlayerId.First).CurrentTurn;
+            var firstConnected = shooter != PlayerId.First;
+            var secondConnected = shooter != PlayerId.Second;
+
+            server.TickTurn(5f, true, true);
+            var left = server.GetView(PlayerId.First).TurnSecondsLeft;
+
+            Assert.That(server.TickTurn(10f, firstConnected, secondConnected), Is.False);
+            var paused = server.GetView(PlayerId.First);
+            Assert.That(paused.CurrentTurn, Is.EqualTo(shooter));
+            Assert.That(paused.TurnPaused, Is.True);
+            Assert.That(paused.TurnSecondsLeft, Is.EqualTo(left));
+        }
+
         private static MatchServer Start(int seed)
         {
             var server = new MatchServer(new RandomShipPlacer());

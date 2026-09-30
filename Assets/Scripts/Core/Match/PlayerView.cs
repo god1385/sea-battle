@@ -11,7 +11,9 @@ namespace SeaBattle.Core.Match
             int[,] enemyHulls,
             PlayerId currentTurn,
             MatchPhase phase,
-            PlayerId? winner)
+            PlayerId? winner,
+            int turnSecondsLeft,
+            bool turnPaused)
         {
             OwnCells = ownCells;
             EnemyCells = enemyCells;
@@ -20,6 +22,8 @@ namespace SeaBattle.Core.Match
             CurrentTurn = currentTurn;
             Phase = phase;
             Winner = winner;
+            TurnSecondsLeft = turnSecondsLeft;
+            TurnPaused = turnPaused;
         }
 
         public CellMark[,] OwnCells { get; }
@@ -35,5 +39,9 @@ namespace SeaBattle.Core.Match
         public MatchPhase Phase { get; }
 
         public PlayerId? Winner { get; }
+
+        public int TurnSecondsLeft { get; }
+
+        public bool TurnPaused { get; }
     }
 }

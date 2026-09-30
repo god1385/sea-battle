@@ -33,6 +33,9 @@ namespace SeaBattle.Core.Client
         private MatchPhase _phase = MatchPhase.NotStarted;
         private PlayerId? _winner;
         private string _rejectText = string.Empty;
+        private float _turnSecondsLeft;
+        private bool _turnPaused;
+        private float _sinceSend;
 
         public ClientSession(PlayerId player, IClientChannel channel)
         {
@@ -52,6 +55,14 @@ namespace SeaBattle.Core.Client
         public void Disconnect() => _channel.Disconnect();
 
         public void SetDeliveryDelay(int milliseconds) => _channel.DeliveryDelayMilliseconds = milliseconds;
+
+        public void SetLossPercent(int percent) => _channel.LossPercent = percent;
+
+        public void Tick(float deltaSeconds)
+        {
+            TickClock(deltaSeconds);
+            TickRetry(deltaSeconds);
+        }
 
         public void Shoot(int x, int y)
         {
@@ -106,6 +117,8 @@ namespace SeaBattle.Core.Client
             _currentTurn = (PlayerId)message.CurrentTurn;
             _phase = (MatchPhase)message.Phase;
             _winner = message.Winner < 0 ? (PlayerId?)null : (PlayerId)message.Winner;
+            _turnSecondsLeft = message.TurnSecondsLeft;
+            _turnPaused = message.TurnPaused;
             _hasSnapshot = true;
             _hasReject = false;
             Publish();
@@ -129,6 +142,7 @@ namespace SeaBattle.Core.Client
 
         private void SendShoot()
         {
+            _sinceSend = 0f;
             _channel.Send(WireJson.Pack(MessageTypes.Shoot, new ShootMessage
             {
                 X = _pendingX,
@@ -136,6 +150,37 @@ namespace SeaBattle.Core.Client
                 RequestId = _pendingRequestId
             }));
         }
+
+        private void TickClock(float deltaSeconds)
+        {
+            if (!_hasSnapshot || _turnPaused || _phase != MatchPhase.InProgress)
+                return;
+
+            var shown = ShownSeconds();
+            _turnSecondsLeft -= deltaSeconds;
+            if (_turnSecondsLeft < 0f)
+                _turnSecondsLeft = 0f;
+
+            if (ShownSeconds() != shown)
+                Publish();
+        }
+
+        private void TickRetry(float deltaSeconds)
+        {
+            if (!_connected || !_waiting)
+                return;
+
+            _sinceSend += deltaSeconds;
+            if (_sinceSend < RetryAfterSeconds())
+                return;
+
+            SendShoot();
+        }
+
+        private float RetryAfterSeconds() =>
+            Math.Max(1f, _channel.DeliveryDelayMilliseconds / 1000f * 2f + 0.3f);
+
+        private int ShownSeconds() => (int)Math.Ceiling(_turnSecondsLeft);
 
         private bool CanShoot(int x, int y)
         {
@@ -188,7 +233,16 @@ namespace SeaBattle.Core.Client
             if (!_hasSnapshot)
                 return "Ожидание партии";
 
-            return _currentTurn == Player ? "Ваш ход" : "Ход соперника";
+            if (_turnPaused)
+            {
+                return _currentTurn == Player
+                    ? $"Ваш ход · пауза · {ShownSeconds()} с"
+                    : $"Ход соперника · пауза · {ShownSeconds()} с";
+            }
+
+            return _currentTurn == Player
+                ? $"Ваш ход · {ShownSeconds()} с"
+                : $"Ход соперника · {ShownSeconds()} с";
         }
 
         private static string RejectText(int reason) => reason switch

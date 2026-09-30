@@ -13,6 +13,8 @@ namespace SeaBattle.Core.Match
                 CurrentTurn = (int)view.CurrentTurn,
                 Phase = (int)view.Phase,
                 Winner = view.Winner.HasValue ? (int)view.Winner.Value : -1,
+                TurnSecondsLeft = view.TurnSecondsLeft,
+                TurnPaused = view.TurnPaused,
                 OwnCells = Flatten(view.OwnCells, view.OwnHulls),
                 EnemyCells = Flatten(view.EnemyCells, view.EnemyHulls)
             };

@@ -22,6 +22,7 @@ namespace SeaBattle.Core.UI.Views
             Disconnect = column.Disconnect.OnClickAsObservable();
             Connect = column.Connect.OnClickAsObservable();
             DelaySubmitted = column.Delay.OnEndEditAsObservable();
+            LossSubmitted = column.Loss.OnEndEditAsObservable();
             _own = Index(column.OwnCells);
             _enemy = Index(column.EnemyCells);
             var enemy = column.EnemyCells;
@@ -41,6 +42,8 @@ namespace SeaBattle.Core.UI.Views
         public IObservable<Unit> Connect { get; }
 
         public IObservable<string> DelaySubmitted { get; }
+
+        public IObservable<string> LossSubmitted { get; }
 
         public void Render(ClientBoardState state)
         {

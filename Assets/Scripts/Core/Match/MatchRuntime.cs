@@ -42,8 +42,13 @@ namespace SeaBattle.Core.Match
         public void Tick()
         {
             var delta = Time.unscaledDeltaTime;
+            _firstSession.Tick(delta);
+            _secondSession.Tick(delta);
             _firstLink.Tick(delta);
             _secondLink.Tick(delta);
+            _gateway.TickTurn(delta, _firstLink.Client.IsConnected, _secondLink.Client.IsConnected);
+            _firstLink.Tick(0f);
+            _secondLink.Tick(0f);
         }
 
         public void Dispose()

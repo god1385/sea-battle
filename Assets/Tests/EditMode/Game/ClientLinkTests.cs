@@ -141,6 +141,50 @@ namespace SeaBattle.Tests.Game
             AssertSame(dropped.Session(shooter.Player).State.Value.EnemyCells, normal);
         }
 
+        [Test]
+        public void Client_LostShot_IsResentAndAppliedOnce()
+        {
+            using var table = new MatchTable(15, 0);
+            table.ConnectBoth();
+            table.Tick();
+            var shooter = table.Current;
+            var link = table.Link(shooter.Player);
+            link.Client.LossPercent = 100;
+            shooter.Shoot(0, 0);
+            table.Tick(1f);
+
+            Assert.That(shooter.State.Value.EnemyCells[0, 0], Is.EqualTo(CellMark.Unknown));
+
+            link.Client.LossPercent = 0;
+            shooter.Tick(1.1f);
+            table.Tick(1f);
+            var once = Copy(shooter.State.Value.EnemyCells);
+            Assert.That(once[0, 0], Is.Not.EqualTo(CellMark.Unknown));
+
+            shooter.Tick(1.1f);
+            table.Tick(1f);
+            AssertSame(shooter.State.Value.EnemyCells, once);
+        }
+
+        [Test]
+        public void Client_DisconnectedTurn_FreezesTheOtherPlayersTimer()
+        {
+            using var table = new MatchTable(4, 0);
+            table.ConnectBoth();
+            table.Tick();
+            var shooter = table.Current;
+            var other = table.Session(shooter.Player == PlayerId.First ? PlayerId.Second : PlayerId.First);
+
+            table.Disconnect(shooter.Player);
+            table.TickTurn(3f);
+            table.Tick();
+            var status = other.State.Value.Status;
+            Assert.That(status, Does.Contain("пауза"));
+
+            other.Tick(5f);
+            Assert.That(other.State.Value.Status, Is.EqualTo(status));
+        }
+
         private static CellMark[,] ShootOnce(int seed)
         {
             using var table = new MatchTable(seed, 0);
@@ -220,6 +264,9 @@ namespace SeaBattle.Tests.Game
                 _firstLink.Tick(seconds);
                 _secondLink.Tick(seconds);
             }
+
+            public void TickTurn(float seconds) =>
+                _gateway.TickTurn(seconds, _firstLink.Client.IsConnected, _secondLink.Client.IsConnected);
 
             public void SetDelay(int milliseconds)
             {

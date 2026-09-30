@@ -8,6 +8,10 @@ namespace SeaBattle.Core.Match
 
         public ShotResponse TryShoot(PlayerId player, CellCoord cell, int requestId);
 
+        public bool IsTurnPaused { get; }
+
+        public bool TickTurn(float deltaSeconds, bool firstConnected, bool secondConnected);
+
         public PlayerView GetView(PlayerId player);
     }
 }

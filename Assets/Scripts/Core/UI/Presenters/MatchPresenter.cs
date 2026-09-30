@@ -53,12 +53,19 @@ namespace SeaBattle.Core.UI.Presenters
             view.Disconnect.Subscribe(_ => session.Disconnect()).AddTo(_subscriptions);
             view.Connect.Subscribe(_ => session.Connect()).AddTo(_subscriptions);
             view.DelaySubmitted.Subscribe(text => ApplyDelay(session, text)).AddTo(_subscriptions);
+            view.LossSubmitted.Subscribe(text => ApplyLoss(session, text)).AddTo(_subscriptions);
         }
 
         private static void ApplyDelay(ClientSession session, string text)
         {
             if (int.TryParse(text, out var milliseconds))
                 session.SetDeliveryDelay(milliseconds);
+        }
+
+        private static void ApplyLoss(ClientSession session, string text)
+        {
+            if (int.TryParse(text, out var percent))
+                session.SetLossPercent(percent);
         }
     }
 }

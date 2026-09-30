@@ -15,6 +15,8 @@ namespace SeaBattle.Core.UI.Views
 
         public IObservable<string> DelaySubmitted { get; }
 
+        public IObservable<string> LossSubmitted { get; }
+
         public void Render(ClientBoardState state);
     }
 }

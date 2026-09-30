@@ -11,6 +11,7 @@ namespace SeaBattle.Core.UI.Views
         [SerializeField] private Button disconnect;
         [SerializeField] private Button connect;
         [SerializeField] private InputField delay;
+        [SerializeField] private InputField loss;
 
         public Text Status => status;
 
@@ -24,13 +25,16 @@ namespace SeaBattle.Core.UI.Views
 
         public InputField Delay => delay;
 
+        public InputField Loss => loss;
+
         public void Assign(
             Text statusText,
             CellView[] own,
             CellView[] enemy,
             Button disconnectButton,
             Button connectButton,
-            InputField delayField)
+            InputField delayField,
+            InputField lossField)
         {
             status = statusText;
             ownCells = own;
@@ -38,8 +42,11 @@ namespace SeaBattle.Core.UI.Views
             disconnect = disconnectButton;
             connect = connectButton;
             delay = delayField;
+            loss = lossField;
         }
 
         public void SetDelay(int milliseconds) => delay.text = milliseconds.ToString();
+
+        public void SetLoss(int percent) => loss.text = percent.ToString();
     }
 }

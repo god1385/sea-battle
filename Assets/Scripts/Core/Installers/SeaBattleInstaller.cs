@@ -44,7 +44,9 @@ namespace SeaBattle.Core.Installers
         {
             var config = context.Container.Resolve<GameConfig>();
             var log = context.Container.Resolve<NetworkLog>();
-            return new InProcessLink(label, config.DeliveryDelayMilliseconds, log.Append);
+            var link = new InProcessLink(label, config.DeliveryDelayMilliseconds, log.Append);
+            link.Client.LossPercent = config.MessageLossPercent;
+            return link;
         }
 
         private static ClientSession CreateSession(InjectContext context, PlayerId player, string seat)

@@ -10,6 +10,8 @@ namespace SeaBattle.Common.Messages
         public int CurrentTurn;
         public int Phase;
         public int Winner;
+        public int TurnSecondsLeft;
+        public bool TurnPaused;
         public CellDto[] OwnCells;
         public CellDto[] EnemyCells;
     }
