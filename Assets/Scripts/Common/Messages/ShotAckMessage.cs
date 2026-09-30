@@ -8,6 +8,5 @@ namespace SeaBattle.Common.Messages
         public int RequestId;
         public bool Accepted;
         public int RejectReason;
-        public int ShotKind;
     }
 }

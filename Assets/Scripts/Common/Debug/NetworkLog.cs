@@ -12,9 +12,6 @@ namespace SeaBattle.Common.Debug
 
         public IReadOnlyReactiveProperty<string> Lines => _text;
 
-        /// <summary>
-        /// Appends one traffic line when the log is enabled.
-        /// </summary>
         public void Append(string line)
         {
             if (!Enabled)

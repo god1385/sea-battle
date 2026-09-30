@@ -5,9 +5,6 @@ namespace SeaBattle.Core.Game
 {
     public class GameRules
     {
-        /// <summary>
-        /// Copies the board size and ship lengths. Width runs along X, height along Y.
-        /// </summary>
         public GameRules(int width, int height, IReadOnlyList<int> shipLengths)
         {
             if (width < 1)

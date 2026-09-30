@@ -21,9 +21,6 @@ namespace SeaBattle.Core.UI.Views
 
         public PlayerColumnRefs Second => second;
 
-        /// <summary>
-        /// Wires the shared bar and both player columns.
-        /// </summary>
         public void Assign(
             Button restartButton,
             Toggle toggle,
@@ -38,9 +35,6 @@ namespace SeaBattle.Core.UI.Views
             second = secondColumn;
         }
 
-        /// <summary>
-        /// Applies the config values that the scene shows before the first message arrives.
-        /// </summary>
         public void ApplyConfig(bool logEnabled, int delayMilliseconds)
         {
             logToggle.isOn = logEnabled;

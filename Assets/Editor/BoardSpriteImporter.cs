@@ -14,10 +14,7 @@ public static class BoardSpriteImporter
         for (var i = 0; i < guids.Length; i++)
         {
             var path = AssetDatabase.GUIDToAssetPath(guids[i]);
-            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
-            if (importer == null)
-                continue;
-
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
             if (importer.textureType == TextureImporterType.Sprite
                 && importer.alphaIsTransparency
                 && !importer.mipmapEnabled)

@@ -20,9 +20,6 @@ namespace SeaBattle.Core.Network
         private bool _clientConnected;
         private bool _disposed;
 
-        /// <summary>
-        /// Creates a client end and a server end that exchange serialized messages in send order.
-        /// </summary>
         public InProcessLink(string label, int deliveryDelayMilliseconds, Action<string> log)
         {
             _label = label;
@@ -37,9 +34,6 @@ namespace SeaBattle.Core.Network
 
         public IServerEndpoint Server { get; }
 
-        /// <summary>
-        /// Delivers due messages without reordering them. A disposed link ignores the tick.
-        /// </summary>
         public void Tick(float deltaSeconds)
         {
             if (_disposed)
@@ -50,9 +44,6 @@ namespace SeaBattle.Core.Network
             DeliverDue(_toClient, _clientIncoming, true);
         }
 
-        /// <summary>
-        /// Stops delivery so a scene reload cannot touch a destroyed client.
-        /// </summary>
         public void Dispose()
         {
             if (_disposed)
@@ -146,10 +137,7 @@ namespace SeaBattle.Core.Network
         {
             private readonly InProcessLink _link;
 
-            public ClientFacade(InProcessLink link)
-            {
-                _link = link;
-            }
+            public ClientFacade(InProcessLink link) => _link = link;
 
             public bool IsConnected => _link._clientConnected;
 
@@ -159,19 +147,10 @@ namespace SeaBattle.Core.Network
                 set => _link._delayMs = value < 0 ? 0 : value;
             }
 
-            /// <summary>
-            /// Opens the channel. Messages lost while it was closed stay lost.
-            /// </summary>
             public void Connect() => _link.ConnectClient();
 
-            /// <summary>
-            /// Drops every message still in flight and tells the client the link is down.
-            /// </summary>
             public void Disconnect() => _link.DisconnectClient();
 
-            /// <summary>
-            /// Queues one serialized message. It is ignored while the channel is closed.
-            /// </summary>
             public void Send(string json) => _link.EnqueueToServer(json);
 
             public IObservable<IncomingMessage> Incoming => _link._clientIncoming;
@@ -183,14 +162,8 @@ namespace SeaBattle.Core.Network
         {
             private readonly InProcessLink _link;
 
-            public ServerFacade(InProcessLink link)
-            {
-                _link = link;
-            }
+            public ServerFacade(InProcessLink link) => _link = link;
 
-            /// <summary>
-            /// Queues a serialized message for the client. A disconnected client never receives it.
-            /// </summary>
             public void Send(string json) => _link.EnqueueToClient(json);
 
             public IObservable<IncomingMessage> Incoming => _link._serverIncoming;

@@ -16,9 +16,6 @@ namespace SeaBattle.Common.Config
 
         public bool MessageLogEnabled => messageLogEnabled;
 
-        /// <summary>
-        /// Copies the configured board size and ship set into plain rules.
-        /// </summary>
         public GameRules CreateRules() => new GameRules(width, height, shipLengths);
     }
 }

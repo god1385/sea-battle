@@ -17,9 +17,6 @@ namespace SeaBattle.Core.UI.Presenters
         private readonly ClientSession _first;
         private readonly ClientSession _second;
 
-        /// <summary>
-        /// Binds both boards and the debug bar to the client sessions.
-        /// </summary>
         public MatchPresenter(
             MatchUi ui,
             NetworkLog log,
@@ -32,9 +29,6 @@ namespace SeaBattle.Core.UI.Presenters
             _second = second;
         }
 
-        /// <summary>
-        /// Subscribes views to state and user input to the sessions.
-        /// </summary>
         public void Initialize()
         {
             Bind(_ui.First, _first);
@@ -46,9 +40,6 @@ namespace SeaBattle.Core.UI.Presenters
             _log.Lines.Subscribe(_ui.Hud.ShowLog).AddTo(_subscriptions);
         }
 
-        /// <summary>
-        /// Unsubscribes before the views release their click streams.
-        /// </summary>
         public void Dispose()
         {
             _subscriptions.Dispose();

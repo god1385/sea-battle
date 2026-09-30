@@ -4,9 +4,6 @@ namespace SeaBattle.Core.Match
 {
     public class PlayerView
     {
-        /// <summary>
-        /// A snapshot of one player's visible boards, the turn, and the winner.
-        /// </summary>
         public PlayerView(
             CellMark[,] ownCells,
             CellMark[,] enemyCells,

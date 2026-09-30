@@ -15,9 +15,6 @@ namespace SeaBattle.Core.UI.Views
         private readonly CellView[,] _own;
         private readonly CellView[,] _enemy;
 
-        /// <summary>
-        /// Binds one player column that is already placed in the scene.
-        /// </summary>
         public PlayerBoardView(PlayerColumnRefs column, BoardArt art)
         {
             _art = art;
@@ -45,9 +42,6 @@ namespace SeaBattle.Core.UI.Views
 
         public IObservable<string> DelaySubmitted { get; }
 
-        /// <summary>
-        /// Paints the placed grids from the latest client state.
-        /// </summary>
         public void Render(ClientBoardState state)
         {
             _status.text = state.Status;
@@ -58,9 +52,6 @@ namespace SeaBattle.Core.UI.Views
             Paint(_enemy, state.EnemyCells, state, true);
         }
 
-        /// <summary>
-        /// Closes the shot stream so a reloaded scene cannot receive old clicks.
-        /// </summary>
         public void Dispose()
         {
             _clicks.Dispose();

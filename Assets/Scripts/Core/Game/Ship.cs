@@ -7,9 +7,6 @@ namespace SeaBattle.Core.Game
         private readonly CellCoord[] _cells;
         private int _hitCount;
 
-        /// <summary>
-        /// Creates a ship on the given cells and remembers which drawing it uses. The coordinates are copied.
-        /// </summary>
         public Ship(IReadOnlyList<CellCoord> cells, HullKind hull)
         {
             _cells = new CellCoord[cells.Count];
@@ -27,9 +24,6 @@ namespace SeaBattle.Core.Game
 
         public bool IsSunk => _hitCount >= _cells.Length;
 
-        /// <summary>
-        /// Records one hit. The ship sinks when every cell has been hit.
-        /// </summary>
         public void RegisterHit() => _hitCount++;
     }
 }

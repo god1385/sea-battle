@@ -5,9 +5,6 @@ namespace SeaBattle.Core.Client
 {
     public class ClientBoardState
     {
-        /// <summary>
-        /// One rendered frame: the latest server snapshot plus whether a shot is still waiting.
-        /// </summary>
         public ClientBoardState(
             PlayerId player,
             bool isConnected,
@@ -76,9 +73,6 @@ namespace SeaBattle.Core.Client
 
         public string Status { get; }
 
-        /// <summary>
-        /// True when this player may fire at that enemy cell.
-        /// </summary>
         public bool CanShoot(CellMark mark) =>
             IsConnected
             && !IsWaiting

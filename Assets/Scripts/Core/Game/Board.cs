@@ -10,9 +10,6 @@ namespace SeaBattle.Core.Game
         private readonly CellData[,] _cells;
         private readonly List<Ship> _ships = new List<Ship>();
 
-        /// <summary>
-        /// Creates an empty board. Width runs along X, height along Y.
-        /// </summary>
         public Board(int width, int height)
         {
             _width = width;
@@ -26,15 +23,9 @@ namespace SeaBattle.Core.Game
 
         public IReadOnlyList<Ship> Ships => _ships;
 
-        /// <summary>
-        /// Returns true when the coordinate lies inside the board.
-        /// </summary>
         public bool Contains(CellCoord cell) =>
             cell.X >= 0 && cell.Y >= 0 && cell.X < _width && cell.Y < _height;
 
-        /// <summary>
-        /// Places a straight ship when it fits the no-touch rule. Returns false when the cells are illegal.
-        /// </summary>
         public bool TryPlaceShip(IReadOnlyList<CellCoord> cells)
         {
             if (!CanPlace(cells))
@@ -51,9 +42,6 @@ namespace SeaBattle.Core.Game
             return true;
         }
 
-        /// <summary>
-        /// Resolves a shot into a miss, a hit, or a sunk ship. The cell must be inside the board and not shot before.
-        /// </summary>
         public ShotResolution ApplyShot(CellCoord cell)
         {
             EnsureInside(cell);
@@ -78,9 +66,6 @@ namespace SeaBattle.Core.Game
             return new ShotResolution(ShotKind.Sunk, data.Ship.Cells);
         }
 
-        /// <summary>
-        /// Returns true when this cell was already a miss, a hit, or part of a sunk ship.
-        /// </summary>
         public bool IsShot(CellCoord cell)
         {
             EnsureInside(cell);
@@ -88,9 +73,6 @@ namespace SeaBattle.Core.Game
             return kind == CellKind.Miss || kind == CellKind.Hit || kind == CellKind.Sunk;
         }
 
-        /// <summary>
-        /// Returns true when every placed ship is sunk.
-        /// </summary>
         public bool AreAllShipsSunk()
         {
             if (_ships.Count == 0)
@@ -105,43 +87,29 @@ namespace SeaBattle.Core.Game
             return true;
         }
 
-        /// <summary>
-        /// Own-board mark, including ships the owner can see.
-        /// </summary>
         public CellMark GetOwnMark(CellCoord cell)
         {
             EnsureInside(cell);
             return ToOwnMark(_cells[cell.X, cell.Y].Kind);
         }
 
-        /// <summary>
-        /// Hull art for a cell the player is allowed to see. A hidden enemy ship stays None.
-        /// </summary>
         public HullKind GetVisibleHull(CellCoord cell, bool ownSide)
         {
             EnsureInside(cell);
             var data = _cells[cell.X, cell.Y];
-            if (data.Ship == null)
-                return HullKind.None;
-
-            if (!ownSide && data.Kind != CellKind.Sunk)
+            var hullVisible = data.Kind == CellKind.Ship || data.Kind == CellKind.Hit || data.Kind == CellKind.Sunk;
+            if (!hullVisible || (!ownSide && data.Kind != CellKind.Sunk))
                 return HullKind.None;
 
             return data.Ship.Hull;
         }
 
-        /// <summary>
-        /// Enemy-board mark. Unshot ships stay hidden.
-        /// </summary>
         public CellMark GetEnemyMark(CellCoord cell)
         {
             EnsureInside(cell);
             return ToEnemyMark(_cells[cell.X, cell.Y].Kind);
         }
 
-        /// <summary>
-        /// A ship occupies one straight contiguous row or column.
-        /// </summary>
         private static bool IsContiguousStraight(IReadOnlyList<CellCoord> cells)
         {
             if (cells.Count == 0)
@@ -176,9 +144,6 @@ namespace SeaBattle.Core.Game
             return true;
         }
 
-        /// <summary>
-        /// Ships may not overlap or touch, including by a corner.
-        /// </summary>
         private bool CanPlace(IReadOnlyList<CellCoord> cells)
         {
             if (!IsContiguousStraight(cells))

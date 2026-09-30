@@ -1,6 +1,5 @@
 using System;
 using SeaBattle.Common.Config;
-using UnityEngine;
 
 namespace SeaBattle.Core.UI.Views
 {
@@ -9,9 +8,6 @@ namespace SeaBattle.Core.UI.Views
         private readonly PlayerBoardView _first;
         private readonly PlayerBoardView _second;
 
-        /// <summary>
-        /// Binds both player columns and the shared debug bar that are placed in the scene.
-        /// </summary>
         public MatchUi(MatchScreenRefs screen, GameConfig config, BoardArt art)
         {
             screen.ApplyConfig(config.MessageLogEnabled, config.DeliveryDelayMilliseconds);
@@ -26,9 +22,6 @@ namespace SeaBattle.Core.UI.Views
 
         public IPlayerBoardView Second => _second;
 
-        /// <summary>
-        /// Releases the cell click streams.
-        /// </summary>
         public void Dispose()
         {
             _first.Dispose();

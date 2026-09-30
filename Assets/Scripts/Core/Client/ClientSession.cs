@@ -15,10 +15,10 @@ namespace SeaBattle.Core.Client
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
         private readonly ReactiveProperty<ClientBoardState> _state;
 
-        private CellMark[,] _own = new CellMark[0, 0];
-        private CellMark[,] _enemy = new CellMark[0, 0];
-        private int[,] _ownHull = new int[0, 0];
-        private int[,] _enemyHull = new int[0, 0];
+        private CellMark[,] _ownCells = new CellMark[0, 0];
+        private CellMark[,] _enemyCells = new CellMark[0, 0];
+        private int[,] _ownHulls = new int[0, 0];
+        private int[,] _enemyHulls = new int[0, 0];
         private int _width;
         private int _height;
         private bool _connected;
@@ -34,9 +34,6 @@ namespace SeaBattle.Core.Client
         private PlayerId? _winner;
         private string _rejectText = string.Empty;
 
-        /// <summary>
-        /// Listens to one channel. The session never reads the server's boards.
-        /// </summary>
         public ClientSession(PlayerId player, IClientChannel channel)
         {
             Player = player;
@@ -50,24 +47,12 @@ namespace SeaBattle.Core.Client
 
         public IReadOnlyReactiveProperty<ClientBoardState> State => _state;
 
-        /// <summary>
-        /// Connects and asks the server for the current visible state.
-        /// </summary>
         public void Connect() => _channel.Connect();
 
-        /// <summary>
-        /// Closes the channel. An unconfirmed shot is sent again with the same request id after reconnect.
-        /// </summary>
         public void Disconnect() => _channel.Disconnect();
 
-        /// <summary>
-        /// Changes how long this client's messages stay in flight.
-        /// </summary>
         public void SetDeliveryDelay(int milliseconds) => _channel.DeliveryDelayMilliseconds = milliseconds;
 
-        /// <summary>
-        /// Sends one shot and blocks further clicks until the server answers.
-        /// </summary>
         public void Shoot(int x, int y)
         {
             if (!CanShoot(x, y))
@@ -82,9 +67,6 @@ namespace SeaBattle.Core.Client
             Publish();
         }
 
-        /// <summary>
-        /// Stops listening so a scene reload cannot update a destroyed view.
-        /// </summary>
         public void Dispose()
         {
             _subscriptions.Dispose();
@@ -117,10 +99,10 @@ namespace SeaBattle.Core.Client
             var message = JsonUtility.FromJson<SnapshotMessage>(payload);
             _width = message.Width;
             _height = message.Height;
-            _own = Read(message.OwnCells, message.Width, message.Height);
-            _enemy = Read(message.EnemyCells, message.Width, message.Height);
-            _ownHull = ReadHull(message.OwnCells, message.Width, message.Height);
-            _enemyHull = ReadHull(message.EnemyCells, message.Width, message.Height);
+            _ownCells = Read(message.OwnCells, message.Width, message.Height);
+            _enemyCells = Read(message.EnemyCells, message.Width, message.Height);
+            _ownHulls = ReadHull(message.OwnCells, message.Width, message.Height);
+            _enemyHulls = ReadHull(message.EnemyCells, message.Width, message.Height);
             _currentTurn = (PlayerId)message.CurrentTurn;
             _phase = (MatchPhase)message.Phase;
             _winner = message.Winner < 0 ? (PlayerId?)null : (PlayerId)message.Winner;
@@ -166,7 +148,7 @@ namespace SeaBattle.Core.Client
             if (x < 0 || y < 0 || x >= _width || y >= _height)
                 return false;
 
-            return _enemy[x, y] == CellMark.Unknown;
+            return _enemyCells[x, y] == CellMark.Unknown;
         }
 
         private void Publish() => _state.Value = BuildState();
@@ -178,10 +160,10 @@ namespace SeaBattle.Core.Client
             _hasSnapshot,
             _width,
             _height,
-            _own,
-            _enemy,
-            _ownHull,
-            _enemyHull,
+            _ownCells,
+            _enemyCells,
+            _ownHulls,
+            _enemyHulls,
             _currentTurn,
             _phase,
             _winner,

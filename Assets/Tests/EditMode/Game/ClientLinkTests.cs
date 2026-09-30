@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using UniRx;
 using SeaBattle.Common.Messages;
 using SeaBattle.Core.Client;
 using SeaBattle.Core.Game;
@@ -208,56 +209,32 @@ namespace SeaBattle.Tests.Game
             public ClientSession Current =>
                 First.State.Value.CurrentTurn == PlayerId.First ? First : Second;
 
-            /// <summary>
-            /// Opens both channels so each client requests its own snapshot.
-            /// </summary>
             public void ConnectBoth()
             {
                 First.Connect();
                 Second.Connect();
             }
 
-            /// <summary>
-            /// Advances both links by the same amount of time.
-            /// </summary>
             public void Tick(float seconds = 0f)
             {
                 _firstLink.Tick(seconds);
                 _secondLink.Tick(seconds);
             }
 
-            /// <summary>
-            /// Sets the delay used by messages sent after this call.
-            /// </summary>
             public void SetDelay(int milliseconds)
             {
                 _firstLink.Client.DeliveryDelayMilliseconds = milliseconds;
                 _secondLink.Client.DeliveryDelayMilliseconds = milliseconds;
             }
 
-            /// <summary>
-            /// Returns the link owned by one player.
-            /// </summary>
             public InProcessLink Link(PlayerId player) => player == PlayerId.First ? _firstLink : _secondLink;
 
-            /// <summary>
-            /// Returns the session of one player.
-            /// </summary>
             public ClientSession Session(PlayerId player) => player == PlayerId.First ? First : Second;
 
-            /// <summary>
-            /// Closes one player's channel and drops what was still in flight.
-            /// </summary>
             public void Disconnect(PlayerId player) => Session(player).Disconnect();
 
-            /// <summary>
-            /// Opens one player's channel again.
-            /// </summary>
             public void Connect(PlayerId player) => Session(player).Connect();
 
-            /// <summary>
-            /// Releases both clients and the server gateway.
-            /// </summary>
             public void Dispose()
             {
                 First.Dispose();

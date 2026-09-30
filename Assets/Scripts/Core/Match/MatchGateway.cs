@@ -15,9 +15,6 @@ namespace SeaBattle.Core.Match
         private readonly IServerEndpoint _second;
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
 
-        /// <summary>
-        /// Binds two endpoints to the match. The endpoints are the only way a client message gets in.
-        /// </summary>
         public MatchGateway(IMatchServer server, IServerEndpoint first, IServerEndpoint second)
         {
             _server = server;
@@ -27,14 +24,8 @@ namespace SeaBattle.Core.Match
             _second.Incoming.Subscribe(message => OnMessage(PlayerId.Second, message)).AddTo(_subscriptions);
         }
 
-        /// <summary>
-        /// Places both fleets before either client is allowed to shoot.
-        /// </summary>
         public void Start(GameRules rules, int seed) => _server.Start(rules, seed);
 
-        /// <summary>
-        /// Stops listening so a scene reload does not deliver into a dead match.
-        /// </summary>
         public void Dispose() => _subscriptions.Dispose();
 
         private void OnMessage(PlayerId player, IncomingMessage message)
@@ -60,8 +51,7 @@ namespace SeaBattle.Core.Match
             {
                 RequestId = shot.RequestId,
                 Accepted = response.IsAccepted,
-                RejectReason = response.RejectReason.HasValue ? (int)response.RejectReason.Value : -1,
-                ShotKind = (int)response.ShotKind
+                RejectReason = response.RejectReason.HasValue ? (int)response.RejectReason.Value : -1
             }));
         }
 

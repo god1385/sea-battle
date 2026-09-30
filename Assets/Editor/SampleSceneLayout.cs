@@ -12,7 +12,7 @@ public static class SampleSceneLayout
 {
     private const string ScenePath = "Assets/Scenes/SampleScene.unity";
     private const int Grid = 6;
-    private const float Cell = 42f;
+    private const float Cell = 36f;
 
     [MenuItem("Sea Battle/Place Sample Scene UI")]
     public static void Build()
@@ -55,7 +55,7 @@ public static class SampleSceneLayout
         var restart = CreateButton(top, "Перезапустить сцену", buttonSprite, font);
         var logToggle = CreateLogToggle(top, buttonSprite, font);
 
-        var columns = CreateRow(background, 760f);
+        var columns = CreateRow(background, 660f);
         var row = columns.gameObject.AddComponent<HorizontalLayoutGroup>();
         row.spacing = 16;
         row.childControlWidth = true;
@@ -65,8 +65,8 @@ public static class SampleSceneLayout
         var first = CreateColumn(columns, "Игрок 1", paper, buttonSprite, font);
         var second = CreateColumn(columns, "Игрок 2", paper, buttonSprite, font);
 
-        var logHost = CreateRow(background, 120f);
-        var log = CreateText(logHost, string.Empty, 14, TextAnchor.UpperLeft, font);
+        var logHost = CreateRow(background, 220f);
+        var log = CreateLog(logHost, font);
 
         var screen = canvas.gameObject.AddComponent<MatchScreenRefs>();
         screen.Assign(restart, logToggle, log, first, second);
@@ -198,6 +198,72 @@ public static class SampleSceneLayout
         label.rectTransform.offsetMin = new Vector2(36f, 0f);
         label.raycastTarget = false;
         return toggle;
+    }
+
+    private static Text CreateLog(RectTransform host, Font font)
+    {
+        var viewport = CreateRect(host, "Viewport");
+        Stretch(viewport);
+        viewport.offsetMax = new Vector2(-14f, 0f);
+        var viewportImage = viewport.gameObject.AddComponent<Image>();
+        viewportImage.color = new Color(1f, 1f, 1f, 0.01f);
+        viewport.gameObject.AddComponent<RectMask2D>();
+
+        var textRect = CreateRect(viewport, "Text");
+        textRect.anchorMin = new Vector2(0f, 1f);
+        textRect.anchorMax = new Vector2(1f, 1f);
+        textRect.pivot = new Vector2(0.5f, 1f);
+        textRect.anchoredPosition = Vector2.zero;
+        textRect.sizeDelta = new Vector2(-12f, 0f);
+        var text = textRect.gameObject.AddComponent<Text>();
+        text.font = font;
+        text.fontSize = 14;
+        text.alignment = TextAnchor.UpperLeft;
+        text.color = Color.white;
+        text.horizontalOverflow = HorizontalWrapMode.Wrap;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        text.raycastTarget = false;
+        var fitter = textRect.gameObject.AddComponent<ContentSizeFitter>();
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        var scrollbar = CreateScrollbar(host);
+        var scroll = host.gameObject.AddComponent<ScrollRect>();
+        scroll.viewport = viewport;
+        scroll.content = textRect;
+        scroll.horizontal = false;
+        scroll.vertical = true;
+        scroll.movementType = ScrollRect.MovementType.Clamped;
+        scroll.scrollSensitivity = 30f;
+        scroll.verticalScrollbar = scrollbar;
+        scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
+        return text;
+    }
+
+    private static Scrollbar CreateScrollbar(RectTransform parent)
+    {
+        var sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+        var rect = CreateRect(parent, "Scrollbar");
+        rect.anchorMin = new Vector2(1f, 0f);
+        rect.anchorMax = new Vector2(1f, 1f);
+        rect.pivot = new Vector2(1f, 0.5f);
+        rect.sizeDelta = new Vector2(12f, 0f);
+        var image = rect.gameObject.AddComponent<Image>();
+        image.sprite = sprite;
+        image.type = Image.Type.Sliced;
+        image.color = new Color(0.12f, 0.16f, 0.22f);
+        var scrollbar = rect.gameObject.AddComponent<Scrollbar>();
+        var handle = CreateRect(rect, "Handle");
+        Stretch(handle);
+        handle.offsetMin = new Vector2(2f, 2f);
+        handle.offsetMax = new Vector2(-2f, -2f);
+        var handleImage = handle.gameObject.AddComponent<Image>();
+        handleImage.sprite = sprite;
+        handleImage.type = Image.Type.Sliced;
+        handleImage.color = new Color(0.55f, 0.72f, 0.9f);
+        scrollbar.handleRect = handle;
+        scrollbar.targetGraphic = handleImage;
+        scrollbar.direction = Scrollbar.Direction.BottomToTop;
+        return scrollbar;
     }
 
     private static Button CreateButton(RectTransform parent, string label, Sprite sprite, Font font)

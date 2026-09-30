@@ -24,9 +24,6 @@ namespace SeaBattle.Core.UI.Views
 
         public InputField Delay => delay;
 
-        /// <summary>
-        /// Wires the column after the scene builder creates its controls and grids.
-        /// </summary>
         public void Assign(
             Text statusText,
             CellView[] own,
@@ -43,9 +40,6 @@ namespace SeaBattle.Core.UI.Views
             delay = delayField;
         }
 
-        /// <summary>
-        /// Shows the configured delivery delay in the field.
-        /// </summary>
         public void SetDelay(int milliseconds) => delay.text = milliseconds.ToString();
     }
 }

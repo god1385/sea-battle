@@ -14,9 +14,6 @@ namespace SeaBattle.Core.Installers
 {
     public static class SeaBattleInstaller
     {
-        /// <summary>
-        /// Binds the match, both clients, and the reactive screen. The presenter is initialized after the runtime so it sees the joined state.
-        /// </summary>
         public static void Install(DiContainer container)
         {
             container.Bind<GameConfig>().FromMethod(_ => Resources.Load<GameConfig>("GameConfig")).AsSingle();

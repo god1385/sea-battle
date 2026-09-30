@@ -5,12 +5,8 @@ namespace SeaBattle.Core.Match
 {
     public static class SnapshotMapper
     {
-        /// <summary>
-        /// Copies the visible cells of one player into a message. Hidden ships are already removed.
-        /// </summary>
-        public static SnapshotMessage FromView(PlayerView view)
-        {
-            return new SnapshotMessage
+        public static SnapshotMessage FromView(PlayerView view) =>
+            new SnapshotMessage
             {
                 Width = view.OwnCells.GetLength(0),
                 Height = view.OwnCells.GetLength(1),
@@ -20,7 +16,6 @@ namespace SeaBattle.Core.Match
                 OwnCells = Flatten(view.OwnCells, view.OwnHulls),
                 EnemyCells = Flatten(view.EnemyCells, view.EnemyHulls)
             };
-        }
 
         private static CellDto[] Flatten(CellMark[,] cells, int[,] hulls)
         {

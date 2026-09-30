@@ -30,18 +30,8 @@ namespace SeaBattle.Core.UI.Views
             }
         }
 
-        /// <summary>
-        /// Stores the grid coordinate. The scene builder calls this while placing the cell.
-        /// </summary>
-        public void SetCoord(int cellX, int cellY)
-        {
-            x = cellX;
-            y = cellY;
-        }
+        public void SetCoord(int cellX, int cellY) => (x, y) = (cellX, cellY);
 
-        /// <summary>
-        /// Draws the paper, the hull piece, and the shot mark for this cell.
-        /// </summary>
         public void Paint(CellMark[,] cells, ClientBoardState state, bool enemy, BoardArt art)
         {
             Ensure();

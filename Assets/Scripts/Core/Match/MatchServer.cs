@@ -23,9 +23,6 @@ namespace SeaBattle.Core.Match
             _shipPlacer = shipPlacer;
         }
 
-        /// <summary>
-        /// Places both fleets from the seed and chooses the first player. Throws when the ships cannot be placed.
-        /// </summary>
         public void Start(GameRules rules, int seed)
         {
             var random = new Random(seed);
@@ -49,10 +46,6 @@ namespace SeaBattle.Core.Match
             throw new InvalidOperationException($"Could not place ships after {MaxPlacementAttempts} attempts.");
         }
 
-        /// <summary>
-        /// Applies a shot for the current player, then passes the turn. A hit does not grant an extra turn.
-        /// A repeated requestId returns the stored response and does not change the board.
-        /// </summary>
         public ShotResponse TryShoot(PlayerId player, CellCoord cell, int requestId)
         {
             var key = (player, requestId);
@@ -64,9 +57,6 @@ namespace SeaBattle.Core.Match
             return response;
         }
 
-        /// <summary>
-        /// Returns the caller's own ships and only that player's shots on the enemy board.
-        /// </summary>
         public PlayerView GetView(PlayerId player)
         {
             if (_phase == MatchPhase.NotStarted)
@@ -87,17 +77,17 @@ namespace SeaBattle.Core.Match
         private ShotResponse Resolve(PlayerId player, CellCoord cell)
         {
             if (_phase != MatchPhase.InProgress)
-                return ShotResponse.Rejected(ShotRejectReason.MatchNotRunning, _currentTurn, _winner);
+                return ShotResponse.Rejected(ShotRejectReason.MatchNotRunning, _winner);
 
             if (player != _currentTurn)
-                return ShotResponse.Rejected(ShotRejectReason.NotYourTurn, _currentTurn, _winner);
+                return ShotResponse.Rejected(ShotRejectReason.NotYourTurn, _winner);
 
             var target = TargetBoard(player);
             if (!target.Contains(cell))
-                return ShotResponse.Rejected(ShotRejectReason.OutOfBounds, _currentTurn, _winner);
+                return ShotResponse.Rejected(ShotRejectReason.OutOfBounds, _winner);
 
             if (target.IsShot(cell))
-                return ShotResponse.Rejected(ShotRejectReason.AlreadyShot, _currentTurn, _winner);
+                return ShotResponse.Rejected(ShotRejectReason.AlreadyShot, _winner);
 
             var resolution = target.ApplyShot(cell);
             if (target.AreAllShipsSunk())
@@ -108,7 +98,7 @@ namespace SeaBattle.Core.Match
             else
                 _currentTurn = Opponent(player);
 
-            return ShotResponse.Accepted(resolution.Kind, cell, resolution.Cells, _currentTurn, _winner);
+            return ShotResponse.Accepted(resolution.Kind, _winner);
         }
 
         private Board BoardOf(PlayerId player) => player == PlayerId.First ? _firstBoard : _secondBoard;
