@@ -17,12 +17,12 @@ namespace SeaBattle.Core.Match
                 CurrentTurn = (int)view.CurrentTurn,
                 Phase = (int)view.Phase,
                 Winner = view.Winner.HasValue ? (int)view.Winner.Value : -1,
-                OwnCells = Flatten(view.OwnCells),
-                EnemyCells = Flatten(view.EnemyCells)
+                OwnCells = Flatten(view.OwnCells, view.OwnHulls),
+                EnemyCells = Flatten(view.EnemyCells, view.EnemyHulls)
             };
         }
 
-        private static CellDto[] Flatten(CellMark[,] cells)
+        private static CellDto[] Flatten(CellMark[,] cells, int[,] hulls)
         {
             var width = cells.GetLength(0);
             var height = cells.GetLength(1);
@@ -36,7 +36,8 @@ namespace SeaBattle.Core.Match
                     {
                         X = x,
                         Y = y,
-                        Mark = (int)cells[x, y]
+                        Mark = (int)cells[x, y],
+                        Hull = hulls[x, y]
                     };
                     index++;
                 }

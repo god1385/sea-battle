@@ -17,6 +17,8 @@ namespace SeaBattle.Core.Client
             int height,
             CellMark[,] ownCells,
             CellMark[,] enemyCells,
+            int[,] ownHulls,
+            int[,] enemyHulls,
             PlayerId currentTurn,
             MatchPhase phase,
             PlayerId? winner,
@@ -32,6 +34,8 @@ namespace SeaBattle.Core.Client
             Height = height;
             OwnCells = ownCells;
             EnemyCells = enemyCells;
+            OwnHulls = ownHulls;
+            EnemyHulls = enemyHulls;
             CurrentTurn = currentTurn;
             Phase = phase;
             Winner = winner;
@@ -55,6 +59,10 @@ namespace SeaBattle.Core.Client
         public CellMark[,] OwnCells { get; }
 
         public CellMark[,] EnemyCells { get; }
+
+        public int[,] OwnHulls { get; }
+
+        public int[,] EnemyHulls { get; }
 
         public PlayerId CurrentTurn { get; }
 

@@ -40,7 +40,7 @@ namespace SeaBattle.Core.Game
             if (!CanPlace(cells))
                 return false;
 
-            var ship = new Ship(cells);
+            var ship = new Ship(cells, KindFor(cells.Count));
             for (var i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
@@ -112,6 +112,22 @@ namespace SeaBattle.Core.Game
         {
             EnsureInside(cell);
             return ToOwnMark(_cells[cell.X, cell.Y].Kind);
+        }
+
+        /// <summary>
+        /// Hull art for a cell the player is allowed to see. A hidden enemy ship stays None.
+        /// </summary>
+        public HullKind GetVisibleHull(CellCoord cell, bool ownSide)
+        {
+            EnsureInside(cell);
+            var data = _cells[cell.X, cell.Y];
+            if (data.Ship == null)
+                return HullKind.None;
+
+            if (!ownSide && data.Kind != CellKind.Sunk)
+                return HullKind.None;
+
+            return data.Ship.Hull;
         }
 
         /// <summary>
@@ -192,6 +208,23 @@ namespace SeaBattle.Core.Game
             }
 
             return true;
+        }
+
+        private HullKind KindFor(int length)
+        {
+            if (length <= 1)
+                return HullKind.Boat;
+
+            if (length >= 3)
+                return HullKind.Battleship;
+
+            for (var i = 0; i < _ships.Count; i++)
+            {
+                if (_ships[i].Length == 2)
+                    return HullKind.Gunboat;
+            }
+
+            return HullKind.Submarine;
         }
 
         private static bool ContainsCell(IReadOnlyList<CellCoord> cells, CellCoord candidate)

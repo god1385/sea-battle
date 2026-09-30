@@ -8,5 +8,6 @@ namespace SeaBattle.Common.Messages
         public int X;
         public int Y;
         public int Mark;
+        public int Hull;
     }
 }

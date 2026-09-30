@@ -50,14 +50,15 @@ namespace SeaBattle.Core.UI.Views
             _paper.sprite = art.Cell;
             _paper.color = pending ? new Color(1f, 0.9f, 0.55f) : Color.white;
             _label.text = pending ? "..." : string.Empty;
-            PaintShip(cells, mark, !enemy, art);
+            var hulls = enemy ? state.EnemyHulls : state.OwnHulls;
+            PaintShip(cells, mark, !enemy, art, hulls[x, y]);
             PaintMark(mark, art);
             _button.interactable = enemy && state.CanShoot(mark);
         }
 
-        private void PaintShip(CellMark[,] cells, CellMark mark, bool ownBoard, BoardArt art)
+        private void PaintShip(CellMark[,] cells, CellMark mark, bool ownBoard, BoardArt art, int hull)
         {
-            if (!art.TryGetShip(cells, x, y, ownBoard, out var sprite, out var rotation))
+            if (!art.TryGetShip(cells, x, y, ownBoard, hull, out var sprite, out var rotation))
             {
                 Hide(_ship);
                 return;

@@ -8,16 +8,20 @@ namespace SeaBattle.Core.Game
         private int _hitCount;
 
         /// <summary>
-        /// Creates a ship on the given cells. The coordinates are copied.
+        /// Creates a ship on the given cells and remembers which drawing it uses. The coordinates are copied.
         /// </summary>
-        public Ship(IReadOnlyList<CellCoord> cells)
+        public Ship(IReadOnlyList<CellCoord> cells, HullKind hull)
         {
             _cells = new CellCoord[cells.Count];
             for (var i = 0; i < cells.Count; i++)
                 _cells[i] = cells[i];
+
+            Hull = hull;
         }
 
         public IReadOnlyList<CellCoord> Cells => _cells;
+
+        public HullKind Hull { get; }
 
         public int Length => _cells.Length;
 

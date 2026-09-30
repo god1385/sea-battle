@@ -17,6 +17,8 @@ namespace SeaBattle.Core.Client
 
         private CellMark[,] _own = new CellMark[0, 0];
         private CellMark[,] _enemy = new CellMark[0, 0];
+        private int[,] _ownHull = new int[0, 0];
+        private int[,] _enemyHull = new int[0, 0];
         private int _width;
         private int _height;
         private bool _connected;
@@ -117,6 +119,8 @@ namespace SeaBattle.Core.Client
             _height = message.Height;
             _own = Read(message.OwnCells, message.Width, message.Height);
             _enemy = Read(message.EnemyCells, message.Width, message.Height);
+            _ownHull = ReadHull(message.OwnCells, message.Width, message.Height);
+            _enemyHull = ReadHull(message.EnemyCells, message.Width, message.Height);
             _currentTurn = (PlayerId)message.CurrentTurn;
             _phase = (MatchPhase)message.Phase;
             _winner = message.Winner < 0 ? (PlayerId?)null : (PlayerId)message.Winner;
@@ -176,6 +180,8 @@ namespace SeaBattle.Core.Client
             _height,
             _own,
             _enemy,
+            _ownHull,
+            _enemyHull,
             _currentTurn,
             _phase,
             _winner,
@@ -219,6 +225,15 @@ namespace SeaBattle.Core.Client
                 marks[cells[i].X, cells[i].Y] = (CellMark)cells[i].Mark;
 
             return marks;
+        }
+
+        private static int[,] ReadHull(CellDto[] cells, int width, int height)
+        {
+            var hulls = new int[width, height];
+            for (var i = 0; i < cells.Length; i++)
+                hulls[cells[i].X, cells[i].Y] = cells[i].Hull;
+
+            return hulls;
         }
     }
 }

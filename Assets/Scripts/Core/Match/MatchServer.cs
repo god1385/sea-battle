@@ -77,6 +77,8 @@ namespace SeaBattle.Core.Match
             return new PlayerView(
                 CopyMarks(own, MarkSide.Own),
                 CopyMarks(enemy, MarkSide.Enemy),
+                CopyHulls(own, true),
+                CopyHulls(enemy, false),
                 _currentTurn,
                 _phase,
                 _winner);
@@ -129,6 +131,18 @@ namespace SeaBattle.Core.Match
             }
 
             return marks;
+        }
+
+        private static int[,] CopyHulls(Board board, bool ownSide)
+        {
+            var hulls = new int[board.Width, board.Height];
+            for (var x = 0; x < board.Width; x++)
+            {
+                for (var y = 0; y < board.Height; y++)
+                    hulls[x, y] = (int)board.GetVisibleHull(new CellCoord(x, y), ownSide);
+            }
+
+            return hulls;
         }
 
         private enum MarkSide
